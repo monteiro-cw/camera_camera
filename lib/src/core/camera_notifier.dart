@@ -56,7 +56,13 @@ class CameraNotifier extends ChangeNotifier {
       if (cameraSide == CameraSide.back || cameraSide == CameraSide.front) {
         cameras.removeWhere((e) => e.lensDirection == cameraSide.lensDirection);
       }
-      status = CameraStatusSuccess(cameras: cameras);
+      final uniqueCameras = <String, CameraDescription>{};
+
+      for (final camera in cameras) {
+        uniqueCameras.putIfAbsent(camera.lensDirection.name, () => camera);
+      }
+
+      status = CameraStatusSuccess(cameras: uniqueCameras.values.toList());
       return;
     } on CameraException catch (e) {
       status = CameraStatusFailure(message: e.description ?? "", error: e);
