@@ -8,11 +8,15 @@ class CameraCameraPreview extends StatefulWidget {
   final void Function(String value)? onFile;
   final CameraCameraController controller;
   final bool enableZoom;
+  final Widget? rightWidget;
+  final Widget? content;
   CameraCameraPreview({
     Key? key,
     this.onFile,
     required this.controller,
     required this.enableZoom,
+    this.rightWidget,
+    this.content,
   }) : super(key: key);
 
   @override
@@ -43,81 +47,62 @@ class _CameraCameraPreviewState extends State<CameraCameraPreview> {
                 onScaleUpdate: (details) {
                   widget.controller.setZoomLevel(details.scale);
                 },
-                child: Stack(
-                  children: [
-                    if (widget.controller.cameraMode ==
-                        CameraMode.ratioFull) ...[
-                      OverflowBox(
-                          maxHeight: size.height,
-                          maxWidth:
-                              size.width * (widget.controller.aspectRatio),
-                          child: widget.controller.buildPreview()),
-                    ] else ...[
-                      Center(
-                        child: AspectRatio(
-                          aspectRatio: widget.controller.cameraMode.value,
-                          child: widget.controller.buildPreview(),
-                        ),
-                      ),
-                    ],
-                    if (camera.zoom != null && widget.enableZoom)
-                      Positioned(
-                        bottom: 116,
-                        left: 0.0,
-                        right: 0.0,
-                        child: CircleAvatar(
-                          radius: 20,
-                          backgroundColor: Colors.black.withOpacity(0.6),
-                          child: IconButton(
-                            icon: Center(
-                              child: Text(
-                                "${camera.zoom?.toStringAsFixed(1)}x",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 12),
+                child: Container(
+                  height: size.height,
+                  width: size.width,
+                  child: Center(
+                    child: AspectRatio(
+                      aspectRatio: widget.controller.cameraMode.value,
+                      child: Stack(
+                        children: [
+                          widget.controller.buildPreview(),
+                          Column(
+                            children: [
+                              Expanded(
+                                child: widget.content ?? SizedBox.shrink(),
                               ),
-                            ),
-                            onPressed: () {
-                              widget.controller.zoomChange();
-                            },
-                          ),
-                        ),
-                      ),
-                    if (widget.controller.flashModes.length > 1)
-                      Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 32, left: 64),
-                          child: CircleAvatar(
-                            radius: 20,
-                            backgroundColor: Colors.black.withOpacity(0.6),
-                            child: IconButton(
-                              onPressed: () {
-                                widget.controller.changeFlashMode();
-                              },
-                              icon: Icon(
-                                camera.flashModeIcon,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 32),
-                        child: InkWell(
-                          onTap: () {
-                            widget.controller.takePhoto();
-                          },
-                          child: CircleAvatar(
-                            radius: 30,
-                            backgroundColor: Colors.white,
-                          ),
-                        ),
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Row(
+                                  children: [
+                                    if (widget.controller.flashModes.length > 1)
+                                      CircleAvatar(
+                                        radius: 20,
+                                        backgroundColor:
+                                            Colors.black.withOpacity(0.6),
+                                        child: IconButton(
+                                          onPressed: () {
+                                            widget.controller.changeFlashMode();
+                                          },
+                                          icon: Icon(
+                                            camera.flashModeIcon,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    Spacer(),
+                                    Expanded(
+                                      child: InkWell(
+                                        onTap: () {
+                                          widget.controller.takePhoto();
+                                        },
+                                        child: CircleAvatar(
+                                          radius: 30,
+                                          backgroundColor: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    widget.rightWidget ?? SizedBox.shrink()
+                                  ],
+                                ),
+                              )
+                            ],
+                          )
+                        ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ),
           failure: (message, _) => Container(
