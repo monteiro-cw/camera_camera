@@ -33,6 +33,9 @@ class CameraCamera extends StatefulWidget {
   //You can define your prefered aspect ratio, 1:1, 16:9, 4:3 or full screen
   final CameraMode mode;
 
+  ///Widget that will be superimposed on the camera
+  final Widget? content;
+
   CameraCamera({
     Key? key,
     this.resolutionPreset = ResolutionPreset.ultraHigh,
@@ -42,6 +45,7 @@ class CameraCamera extends StatefulWidget {
     this.mode = CameraMode.ratio16s9,
     this.enableZoom = true,
     this.enableAudio = false,
+    this.content,
   }) : super(key: key);
 
   @override
@@ -83,9 +87,15 @@ class _CameraCameraState extends State<CameraCamera> {
       return Icon(Icons.flip_camera_android);
     }
     if (Platform.isAndroid) {
-      return Icon(Icons.flip_camera_android);
+      return Icon(
+        Icons.flip_camera_android,
+        color: Colors.white,
+      );
     } else {
-      return Icon(Icons.flip_camera_ios);
+      return Icon(
+        Icons.flip_camera_ios,
+        color: Colors.white,
+      );
     }
   }
 
@@ -103,25 +113,22 @@ class _CameraCameraState extends State<CameraCamera> {
                         enableZoom: widget.enableZoom,
                         key: UniqueKey(),
                         controller: controller,
+                        content: widget.content,
+                        rightWidget:
+                            this.controller.status.preview.cameras.length > 1
+                                ? InkWell(
+                                    onTap: () {
+                                      this.controller.changeCamera();
+                                    },
+                                    child: CircleAvatar(
+                                      radius: 20,
+                                      backgroundColor:
+                                          Colors.black.withOpacity(0.6),
+                                      child: getIconByPlatform(),
+                                    ),
+                                  )
+                                : null,
                       ),
-                      if (this.controller.status.preview.cameras.length > 1)
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(bottom: 32, right: 64),
-                            child: InkWell(
-                              onTap: () {
-                                this.controller.changeCamera();
-                              },
-                              child: CircleAvatar(
-                                radius: 20,
-                                backgroundColor: Colors.black.withOpacity(0.6),
-                                child: getIconByPlatform(),
-                              ),
-                            ),
-                          ),
-                        )
                     ],
                   ),
               failure: (message, _) => Container(
