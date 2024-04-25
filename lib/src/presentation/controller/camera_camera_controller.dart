@@ -35,8 +35,7 @@ class CameraCameraController {
       cameraDescription,
       resolutionPreset,
       enableAudio: enableAudio,
-      imageFormatGroup:
-          Platform.isIOS ? ImageFormatGroup.bgra8888 : ImageFormatGroup.yuv420,
+      imageFormatGroup: ImageFormatGroup.yuv420,
     );
   }
 
