@@ -92,7 +92,7 @@ class CameraNotifier extends ChangeNotifier {
     ResolutionPreset resolutionPreset,
   ) async {
     await _cameraController?.dispose();
-    await Future.delayed(Duration(milliseconds: 800));
+    await Future.delayed(const Duration(milliseconds: 400));
 
     final cameras = status.selected.cameras;
     final indexSelected = status.selected.indexSelected;
