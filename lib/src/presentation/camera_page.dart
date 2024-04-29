@@ -36,6 +36,8 @@ class CameraCamera extends StatefulWidget {
   ///Widget that will be superimposed on the camera
   final Widget? content;
 
+  final Widget? loading;
+
   CameraCamera({
     Key? key,
     this.resolutionPreset = ResolutionPreset.ultraHigh,
@@ -46,6 +48,7 @@ class CameraCamera extends StatefulWidget {
     this.enableZoom = true,
     this.enableAudio = false,
     this.content,
+    this.loading,
   }) : super(key: key);
 
   @override
@@ -107,37 +110,37 @@ class _CameraCameraState extends State<CameraCamera> {
         child: AnimatedBuilder(
           animation: controller,
           builder: (_, __) => controller.status.when(
-              preview: (controller) => Stack(
-                    children: [
-                      CameraCameraPreview(
-                        enableZoom: widget.enableZoom,
-                        key: UniqueKey(),
-                        controller: controller,
-                        content: widget.content,
-                        rightWidget:
-                            this.controller.status.preview.cameras.length > 1
-                                ? InkWell(
-                                    onTap: () {
-                                      this.controller.changeCamera();
-                                    },
-                                    child: CircleAvatar(
-                                      radius: 20,
-                                      backgroundColor:
-                                          Colors.black.withOpacity(0.6),
-                                      child: getIconByPlatform(),
-                                    ),
-                                  )
-                                : null,
-                      ),
-                    ],
-                  ),
-              failure: (message, _) => Container(
-                    color: Colors.black,
-                    child: Text(message),
-                  ),
-              orElse: () => Container(
-                    color: Colors.black,
-                  )),
+            preview: (controller) => Stack(
+              children: [
+                CameraCameraPreview(
+                  enableZoom: widget.enableZoom,
+                  key: UniqueKey(),
+                  controller: controller,
+                  content: widget.content,
+                  rightWidget: this.controller.status.preview.cameras.length > 1
+                      ? InkWell(
+                          onTap: () {
+                            this.controller.changeCamera();
+                          },
+                          child: CircleAvatar(
+                            radius: 20,
+                            backgroundColor: Colors.black.withOpacity(0.6),
+                            child: getIconByPlatform(),
+                          ),
+                        )
+                      : null,
+                ),
+              ],
+            ),
+            failure: (message, _) => Container(
+              color: Colors.black,
+              child: Text(message),
+            ),
+            loading: () => widget.loading ?? SizedBox.shrink(),
+            orElse: () => Container(
+              color: Colors.black,
+            ),
+          ),
         ),
       ),
     );
